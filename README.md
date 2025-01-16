@@ -8,14 +8,12 @@ Este repositório contém a configuração de infraestrutura para ambientes **De
 
 - **env/**: Contém os arquivos específicos para os ambientes **Dev** e **Prod**.
   - **Dev/**: Arquivos relacionados ao ambiente de desenvolvimento.
-    - **iac-DEV** e **iac-DEV.pub**: Chaves SSH para o ambiente Dev.
     - **main.tf**: Código Terraform para configurar o ambiente Dev.
     - **playbook.yml**: Playbook do Ansible para provisionamento no ambiente Dev.
   - **Prod/**: Arquivos relacionados ao ambiente de produção.
     - **.terraform/**: Diretório gerado automaticamente pelo Terraform.
     - **terraform.lock.hcl**: Arquivo de bloqueio para dependências Terraform.
     - **ansible.sh**: Script para executar o Ansible no ambiente Prod.
-    - **IAC-PROD** e **IAC-PROD.pub**: Chaves SSH para o ambiente Prod.
     - **main.tf**: Código Terraform para configurar o ambiente Prod.
     - **playbook.yml**: Playbook do Ansible para provisionamento no ambiente Prod.
     - **terraform.tfstate** e **terraform.tfstate.backup**: Arquivos de estado do Terraform.
@@ -39,7 +37,33 @@ Certifique-se de ter instalado:
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 - [Python](https://www.python.org/downloads) e o pacote `locust`
 
-### 2. Configurar o Terraform
+### 2. Criar Chaves SSH
+
+Antes de configurar os ambientes, é necessário criar chaves SSH para acesso seguro aos servidores. Siga os passos abaixo para gerar as chaves:
+
+1. Abra o terminal e execute o comando:
+
+   ```bash
+   ssh-keygen -t rsa -b 4096 -C "seu-email@exemplo.com"
+   ```
+
+2. Quando solicitado, escolha um local para salvar as chaves (ex.: `~/.ssh/iac_key`).
+
+3. Opcionalmente, defina uma senha para proteger a chave privada.
+
+4. O processo gerará dois arquivos:
+   - Uma chave privada (`iac_key`).
+   - Uma chave pública (`iac_key.pub`).
+
+5. Adicione as seguintes entradas ao arquivo `.gitignore` para garantir que as chaves não sejam incluídas no repositório:
+
+   ```gitignore
+   *.pem
+   *.pub
+   iac_key
+   ```
+
+### 3. Configurar o Terraform
 
 1. **Inicializar o Terraform**:
    
@@ -67,7 +91,7 @@ Certifique-se de ter instalado:
 
    Confirme digitando `yes` quando solicitado.
 
-### 3. Configurar o Ansible
+### 4. Configurar o Ansible
 
 1. **Executar o Playbook**:
 
@@ -79,7 +103,7 @@ Certifique-se de ter instalado:
 
    Para o ambiente de produção, substitua o caminho do playbook pelo respectivo arquivo de **Prod**.
 
-### 4. Testar a Aplicação com Locust
+### 5. Testar a Aplicação com Locust
 
 1. **Instalar o Locust**:
 
