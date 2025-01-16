@@ -1,0 +1,10 @@
+#Ansible Playnook (ansible-playbook.json)
+- hosts: terraform-ansible # Nome do host no arquivo hosts
+  tasks: # Executar uma tarefa
+  - name: criando o arquivo # Nome da tarefa
+    copy: # Para criar um arquivo nos utilizamos o copy
+      dest: /home/ubuntu/index.html # Destino do arquivo
+      content: <h1> E verdade esse bilhete</h1> # Conteudo do arquivo
+  - name: criando o servidor
+    shell: "nohup busybox httpd -f -p 8080 &" #Para executar um comando no shell tuilizamos o Shell
+

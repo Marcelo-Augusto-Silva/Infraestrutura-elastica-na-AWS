@@ -1,0 +1,42 @@
+- hosts: terraform-ansible
+  tasks:
+  - name: Instalando Python3, virtualenv
+    apt: # Instalar alguma coisa igual apt do ubuntu 
+      pkg:  # Para instalar um pacote utilizamos o pkg
+      - python3
+      - virtualenv
+      update_cache: yes
+    become: yes 
+  - name: Git Clone
+    ansible.builtin.git: # É como se fosse um GIT dentro do Ansible 
+      repo: https://github.com/guilhermeonrails/clientes-leo-api # Url do repositório
+      dest: /home/ubuntu/tcc # Destino da cópia
+      version: master # Versão 
+      force: yes # Forçar o comando, ele sempre vai sobrepor os arquvos atuais pelos mais recentes
+  - name: Instalando dependencias com o pip (Django e Django Rest)
+    pip: # Utilizado para instalar modulos Python
+      virtualenv: /home/ubuntu/tcc/venv/ # Ligar a virtualenv
+      requirements: /home/ubuntu/tcc/requirements.txt # Aqui nos passamos o arquivo de requirements para facilitar a instalção das dependencias 
+  
+  - name: Alterando o Host do settings 
+    lineinfile: 
+      path: /home/ubuntu/tcc/setup/settings.py # Caminho do arquivo settings
+      regexp: 'ALLOWED_HOSTS'
+      line: 'ALLOWED_HOSTS = ["*"]'
+      backrefs: yes # Se ele não achar o que é para alterar ele não irá alterar
+  - name: Configurando o banco de dados
+    shell: ". /home/ubuntu/tcc/venv/bin/activate; 
+            python /home/ubuntu/tcc/manage.py migrate"
+  - name: Carregando os dados iniciais 
+    shell: ". /home/ubuntu/tcc/venv/bin/activate; 
+            python /home/ubuntu/tcc/manage.py loaddata clientes.json"
+
+  - name: Alterando o horario
+    lineinfile:
+      path: /home/ubuntu/tcc/setup/settings.py
+      regexp: 'LANGUAGE_CODE'
+      line: "LANGUAGE_CODE = 'pt-br'"
+      backrefs: yes
+
+  - name: Iniciando o Servidor
+    shell: ". /home/ubuntu/tcc/venv/bin/activate; nohup python /home/ubuntu/tcc/setup/manage.py runserver 0.0.0.0:8000 &"

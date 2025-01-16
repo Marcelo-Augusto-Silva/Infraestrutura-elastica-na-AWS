@@ -1,0 +1,37 @@
+- hosts: terraform-ansible
+  tasks:
+  - name: Instalando Python3, virtualenv
+    apt: # Instalar alguma coisa igual apt do ubuntu 
+      pkg:  # Para instalar um pacote utilizamos o pkg
+      - python3
+      - virtualenv
+      update_cache: yes
+    become: yes 
+  - name: Instalando dependencias com o pip (Django e Django Rest)
+    pip: # Utilizado para instalar modulos Python
+      virtualenv: /home/ubuntu/tcc/venv/ # Ligar a virtualenv
+      name:
+        - django
+        - djangorestframework
+  - name: Verificando se projeto já existe
+    stat: # Usamos o stat para verificar se algo já existe, ele retorna True ou False
+      path: /home/ubuntu/tcc/setup/settings.py # Caminho do arquivo que é para verificar
+    register: projeto # Se retornar True ele irá armazenar nessa variavel projeto
+    
+  - name: Iniciando projeto Django
+    when: not projeto.stat.exists # Se o projeto.state.exists tiver ele nao executa se ele nao tiver ele executa 
+    shell: '. /home/ubuntu/tcc/venv/bin/activate; django-admin startproject setup /home/ubuntu/tcc' # Começando o projeto Django
+  
+  - name: Alterando o Host do settings 
+    lineinfile: 
+      path: /home/ubuntu/tcc/setup/settings.py # Caminho do arquivo settings
+      regexp: 'ALLOWED_HOSTS'
+      line: 'ALLOWED_HOSTS = ["*"]'
+      backrefs: yes # Se ele não achar o que é para alterar ele não irá alterar
+
+  - name: Alterando o horario
+    lineinfile:
+      path: /home/ubuntu/tcc/setup/settings.py
+      regexp: 'LANGUAGE_CODE'
+      line: "LANGUAGE_CODE = 'pt-br'"
+      backrefs: yes

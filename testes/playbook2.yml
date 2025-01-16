@@ -1,0 +1,23 @@
+- hosts: terraform-ansible
+  tasks:
+  - name: Instalando Python3, virtualenv
+    apt: # Instalar alguma coisa igual apt do ubuntu 
+      pkg:  # Para instalar um pacote utilizamos o pkg
+      - python3
+      - virtualenv
+      update_cache: yes # Atualizar os gerenciadores de pacotes 
+  - name: Adicionando a chave GPG do repositório do VS Code
+    apt_key: # Adicionar uma chave para pacotes assinados
+      url: https://packages.microsoft.com/keys/microsoft.asc
+      state: present
+
+  - name: Adicionando o repositório do VS Code
+    apt_repository: # Adicionar repositórios APT
+      repo: "deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/repos/code stable main"
+      state: present
+
+  - name: Instalando o VS Code
+    apt: # Instalar pacotes igual o apt do Ubuntu
+      pkg:  # Para instalar um pacote utilizamos o pkg
+        - code
+  become: yes # Utilizamos o become para conseguir instalar as coisas, é como se fosse um sudo 
