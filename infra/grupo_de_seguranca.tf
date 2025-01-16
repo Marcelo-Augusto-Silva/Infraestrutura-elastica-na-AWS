@@ -1,3 +1,5 @@
+#Esse grupo de segurança é só um modelo que não deve ser utilizado em produção, pois esse modelo libera acesso para todos na internet
+
 resource "aws_security_group" "acesso_geral" {
     name = var.nome_grupo_seguranca
     description = var.nome_grupo_seguranca
